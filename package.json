@@ -1,13 +1,11 @@
-# from nodejs.org
-
 {
-  "name": "docker_web_app",
+  "name": "port-listener-app",
   "version": "1.0.0",
-  "description": "Node.js on Docker",
-  "author": "First Last <first.last@example.com>",
-  "main": "server.js",
+  "description": "App listens to port 3000",
+  "author": "Rafael Oliveira <rafa.oliveira1@gmail.com>",
+  "main": "app.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "express": "^4.16.1"
