@@ -18,7 +18,8 @@ if (cluster.isMaster) {
 
 } else {
         console.log('I am a WORKER');
-//piece of code from chaordic
+
+    // port 3000 listener
         app.get('/', function (req, res) {
         res.send('Hello World!');
         });
