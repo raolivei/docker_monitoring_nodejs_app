@@ -4,26 +4,31 @@ var numCPUs = require('os').cpus().length;
 var express = require('express');
 var app = express();
 
+
 if (cluster.isMaster) {
-    // Fork workers.
-      console.log ('I am the MASTER');
+
+    //  console.log ('I am the MASTER');
+    // Shows number of CPUs
+    console.log('Num of CPUs: '+numCPUs)
+    
     for (var i = 0; i < numCPUs; i++) {
+    // Fork workers.
         cluster.fork();
     }
     
+    
         cluster.on('exit', function(worker, code, signal) {
-        console.log('worker ' + worker.process.pid + ' died');
+        console.log('WARNING: worker ' + worker.process.pid + ' is down');
     });
 
-
 } else {
-        console.log('I am a WORKER');
-
-    // port 3000 listener
+        
+        // port 3000 listener
         app.get('/', function (req, res) {
-        res.send('Hello World!');
+        res.send('Hello world!');
         });
         app.listen(3000, function () {
-          console.log('Example app listening on port 3000!');
+        console.log('Example app listening on port 3000!');
+        
         });
 }
