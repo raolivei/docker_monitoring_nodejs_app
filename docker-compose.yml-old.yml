@@ -1,0 +1,40 @@
+version: '2'
+
+services:
+
+  nginx-ssl-proxy:
+    image: danieldent/nginx-ssl-proxy
+    restart: always
+    environment:
+      UPSTREAM: port-listener:3000
+      SERVERNAME: localhost
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/etc/letsencrypt"
+    networks: 
+      - mynetwork
+      
+  port-listener:
+    build:
+      context: ./port-listener/
+      dockerfile: Dockerfile-node    
+    image: port-listener:latest
+    hostname: port-listener
+    volumes:
+      - /var/run/docker.sock:/docker.sock
+#    environment:
+#      - HOSTNAME=port-listener
+    container_name: port-listener
+    restart: unless-stopped  
+    ports:
+      - 3000:3000
+    depends_on:
+      - nginx-ssl-proxy
+    networks: 
+      - mynetwork
+      
+networks:
+  mynetwork:
+    driver: bridge
