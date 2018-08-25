@@ -6,37 +6,23 @@ services:
     build:
       context: ./nginx-proxy/
       dockerfile: Dockerfile-nginx
-    image: nginx-image:latest
+    image: nginx-proxy:1
     container_name: nginx-proxy
     hostname: nginx-proxy
     restart: always
-    # maybe I don't need the below line
-    # dockerfile: Dockerfile-nginx
     ports:
       - 80:80
       - 443:443
-    networks: 
-      - mynetwork
-      
+        
   port-listener:
     build:
       context: ./port-listener/
       dockerfile: Dockerfile-node    
     image: port-listener:latest
     hostname: port-listener
-    volumes:
-      - /var/run/docker.sock:/docker.sock
     container_name: port-listener
     restart: unless-stopped  
     ports:
       - 3000:3000
     depends_on:
       - nginx-proxy
-    networks: 
-      mynetwork:
-#        aliases:
-#        - port-listener
-      
-networks:
-  mynetwork:
-    driver: bridge
