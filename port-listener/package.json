@@ -1,0 +1,13 @@
+{
+  "name": "port-listener-app",
+  "version": "1.0.0",
+  "description": "App listens to port 3000",
+  "author": "Rafael Oliveira <rafa.oliveira1@gmail.com>",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.16.1"
+  }
+}
