@@ -9,52 +9,17 @@ networks:
     driver: bridge
 
 services:
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    volumes:
-      - ./prometheus/:/etc/prometheus/
-      - prometheus_data:/prometheus  
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    restart: unless-stopped
+        
+  app:
+    build:
+      context: ./app/
+      dockerfile: Dockerfile-node    
+    image: app:latest
+    hostname: app
+    container_name: app
+    restart: unless-stopped  
     ports:
-      - 9090:9090
-    networks:
-      - container-net
-
-  cadvisor:
-    image: google/cadvisor:latest
-    container_name: cadvisor
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro    
-    restart: unless-stopped
-    ports:
-      - 7070:8080
-    networks:
-      - container-net
-
-  grafana:
-    image: grafana/grafana:4.6.3
-    container_name: grafana
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./grafana/datasources:/etc/grafana/datasources
-      - ./grafana/dashboards:/etc/grafana/dashboards
-      - ./grafana/setup.sh:/setup.sh
-    entrypoint: /setup.sh
-    environment:
-      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
-      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}   
-    depends_on:
-      - prometheus
-    restart: unless-stopped
-    ports:
-      - 2020:3000
+      - 3000:3000
     networks:
       - container-net
 
@@ -69,21 +34,59 @@ services:
     ports:
       - 80:80
       - 443:443
+    depends_on:
+      - app
     networks:
       - container-net
-        
-  port-listener:
-    build:
-      context: ./port-listener/
-      dockerfile: Dockerfile-node    
-    image: port-listener:latest
-    hostname: port-listener
-    container_name: port-listener
-    restart: unless-stopped  
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prometheus_data:/prometheus  
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    restart: unless-stopped
     ports:
-      - 3000:3000
+      - 9090:9090
     depends_on:
       - nginx-proxy
     networks:
       - container-net
-
+      
+  cadvisor:
+    image: google/cadvisor:latest
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro    
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    ports:
+      - 7070:8080
+    networks:
+      - container-net
+      
+  grafana:
+    image: grafana/grafana:4.6.3
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/datasources:/etc/grafana/datasources
+      - ./grafana/dashboards:/etc/grafana/dashboards
+      - ./grafana/setup.sh:/setup.sh
+    entrypoint: /setup.sh
+    environment:
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}   
+    depends_on:
+      - cadvisor
+    restart: unless-stopped
+    ports:
+      - 2020:3000
+    networks:
+      - container-net
