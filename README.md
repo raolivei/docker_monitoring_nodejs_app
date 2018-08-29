@@ -31,6 +31,7 @@ nginx-proxy
 prometheus
 cadvisor
 grafana
+docker-postfix
 
 
 app: 
@@ -55,6 +56,8 @@ cadvisor:
 grafana:
 - grafana dashboard is configured with metric graphs for monitoring.
 
+docker-postfix:
+Port 25 is not exposed on purpose, as it's regularly blocked by ISP or already occupied by other services.
 
 
 ## Build the containers and start the application:
