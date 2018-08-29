@@ -27,7 +27,7 @@ services:
     build:
       context: ./nginx-proxy/
       dockerfile: Dockerfile-nginx
-    image: nginx-proxy:1
+    image: nginx-proxy:2
     container_name: nginx-proxy
     hostname: nginx-proxy
     restart: always
@@ -88,5 +88,17 @@ services:
     restart: unless-stopped
     ports:
       - 2020:3000
+    networks:
+      - container-net
+
+  mail:
+    build:
+      context: ./mail/
+    image: mail:1
+    container_name: mailserver
+    hostname: mailserver
+    restart: always
+    depends_on:
+      - nginx-proxy
     networks:
       - container-net

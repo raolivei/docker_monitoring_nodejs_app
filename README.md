@@ -31,7 +31,6 @@ nginx-proxy
 prometheus
 cadvisor
 grafana
-docker-postfix
 
 
 app: 
@@ -45,6 +44,36 @@ nginx-proxy:
 - for HTTPS requests: `https://localhost:443`
 You should see the "Hello World" message followed by the number of CPUs.
 
+
+
+
+### EMAIL ####
+docker exec -it nginx-proxy 
+
+access log: /etc/nginx/logs/access.log
+
+get data: awk '{print $9}' /etc/nginx/logs/access.log | sort | uniq -c | sort -rn
+
+get data: docker exec -it nginx-proxy awk '{print $9}' /etc/nginx/logs/access.log | sort | uniq -c | sort -rn
+
+start job: docker exec -it nginx-proxy echo "This is the body of the email" | mail -s "This is the subject line" rafa.oliveira1@gmail.com
+
+SEND EMAIL: docker exec -it nginx-proxy awk '{print $9}' /etc/nginx/logs/access.log | sort | uniq -c | sort -rn | mail rafa.oliveira1@gmail.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 prometheus:
 - it has its database configured to store metrics collected from cadvisor
 
@@ -55,9 +84,6 @@ cadvisor:
 
 grafana:
 - grafana dashboard is configured with metric graphs for monitoring.
-
-docker-postfix:
-Port 25 is not exposed on purpose, as it's regularly blocked by ISP or already occupied by other services.
 
 
 ## Build the containers and start the application:
