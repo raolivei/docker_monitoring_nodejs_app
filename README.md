@@ -8,6 +8,8 @@ prometheus (metrics database);
 cadvisor (metrics collector);
 grafana (reports dashboard).
 
+Tests run on Ubuntu Server 18.04.1 LTS (https://www.ubuntu.com/download/server), but the architecture is flexible enough to work on later Ubuntu versions.
+
 ## Prerequisites:
 
 * Docker Engine version 1.13
@@ -15,15 +17,20 @@ grafana (reports dashboard).
 
 ## Install
 
-1. Clone (or download) this repository on your Docker host
-2. Go to perfdata-monitor-app directory
-3. Compose the containers in attached mode in order to see the terraform resources being printed out every 5 seconds.
-
-## Leverage your access:
+1. Leverage your access:
 `sudo su`
-## Install docker-compose in your machine:
-`apt install docker-compose`
-?? maybe install docker first
+
+2. Clone (or download) this repository on your Docker host and go to XXXXXX directory
+```bash
+$ git clone https://github.com/raolivei/XXXXXX
+$ cd  xxxxxxxx/
+```
+3. Run the XXXX script to start the deployment.
+```bash
+$ ./SCRIPT.sh
+```
+
+The script is going to install docker and docker-compose to your machine
 
 ## List of Containers
 app

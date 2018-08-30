@@ -3,6 +3,7 @@ version: '3'
 volumes:
   prometheus_data: {}
   grafana_data: {}
+  nginx_logs:
   
 networks:
   container-net:
@@ -36,6 +37,22 @@ services:
       - 443:443
     depends_on:
       - app
+    networks:
+      - container-net
+    volumes:
+      - ./nginx_logs:/etc/nginx/logs/
+    
+  mail:
+    build:
+      context: ./mail/
+    image: mail
+    container_name: mailserver
+    hostname: mailserver
+    restart: always
+    depends_on:
+      - nginx-proxy
+    volumes:
+      - nginx_logs
     networks:
       - container-net
 
@@ -88,17 +105,5 @@ services:
     restart: unless-stopped
     ports:
       - 2020:3000
-    networks:
-      - container-net
-
-  mail:
-    build:
-      context: ./mail/
-    image: mail:1
-    container_name: mailserver
-    hostname: mailserver
-    restart: always
-    depends_on:
-      - nginx-proxy
     networks:
       - container-net
