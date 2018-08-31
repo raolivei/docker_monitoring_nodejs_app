@@ -16,6 +16,13 @@ Tests run on Ubuntu Server 18.04.1 LTS (https://www.ubuntu.com/download/server),
 * Docker Compose version 1.21.2
 Make sure that your host has connection to the internet.
 
+
+***
+ssmtp.conf = This file contains the ssmtp server configuration. SSMTP is installed in the docker host by the `deploy.sh` script.
+Use this configuration file to add/change smtp server address and account credentials.
+
+*** Alternatively, you can opt to deploy it manually by executing the `deploy.sh` steps in your shell. This solution is intended to work in either Ubuntu or macOS. ***
+
 ## Install
 
 1. Leverage your access:

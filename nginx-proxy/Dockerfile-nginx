@@ -162,6 +162,12 @@ RUN mkdir /etc/nginx/logs
 #RUN mail-script.sh | tee output.txt | mail -s "Access log" rafa.oliveira1@gmail.com
 
 
-# RUN crontab -l | { cat; echo "34     21       *       *       *       mail-script.sh"; } | #crontab -
+
+# Copy ssmtp.conf to container
+# COPY /mail/ssmtp.conf /etc/ssmtp/ssmtp.conf
+# COPY /mail/getMail.sh /etc/ssmtp/getMail.sh
+
+# RUN crontab -l | grep -v 'mail.sh'  | crontab -
+# RUN crontab -l | { cat; echo "36     20       *       *       *       /etc/ssmtp/getMail.sh"; } | crontab -
 
 CMD ["nginx", "-g", "daemon off;"]
