@@ -14,6 +14,7 @@ Tests run on Ubuntu Server 18.04.1 LTS (https://www.ubuntu.com/download/server),
 
 * Docker Engine version 1.13
 * Docker Compose version 1.21.2
+Make sure that your host has connection to the internet.
 
 ## Install
 
