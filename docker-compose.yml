@@ -38,6 +38,19 @@ services:
       - app
     networks:
       - container-net
+      
+  iperf:
+    build:
+      context: ./iperf/
+      dockerfile: Dockerfile-iperf    
+    image: iperf:latest
+    hostname: iperf
+    container_name: iperf
+    restart: unless-stopped  
+    ports:
+      - 5201:5201
+    networks:
+      - container-net
 
   prometheus:
     image: prom/prometheus:latest
@@ -87,6 +100,6 @@ services:
       - cadvisor
     restart: unless-stopped
     ports:
-      - 2020:3000
+      - 2000:2000
     networks:
       - container-net
