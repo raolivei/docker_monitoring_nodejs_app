@@ -2,13 +2,11 @@ lynx_challenge_docker_app
 ====================
 
 Solution built with Docker. Services:
-
-1. app (node.js code to cluster (load balance) node instances per CPU;
-2. nginx-proxy (reverse proxy for app);
-3. iperf 
-4. prometheus (metrics database);
-5. cadvisor (metrics collector);
-6. grafana (reports dashboard).
+app (node.js code to cluster (load balance) node instances per CPUl;
+nginx-proxy (reverse proxy for app);
+prometheus (metrics database);
+cadvisor (metrics collector);
+grafana (reports dashboard).
 
 Tests run on Ubuntu Server 18.04.1 LTS (https://www.ubuntu.com/download/server), but the architecture is flexible enough to work on later Ubuntu versions.
 
@@ -71,7 +69,6 @@ You should see the "Hello World" message followed by the number of CPUs.
 ### iperf3
 This container was written to test maximum network throughput.
 `docker run --name=XXXXXX -it -p 5201:5201/tcp -p 5201:5201/udp IMAGE/NAME`
-<<<<<<< HEAD
 
 ### Prometheus:
 - it has its database configured to store metrics collected from cadvisor
@@ -87,23 +84,6 @@ This container was written to test maximum network throughput.
 - Grafana dashboard is configured with metric graphs for monitoring.
 - Navigate to `http://<host-ip>:2020` and login with user **admin** password **admin**. You can change the credentials in the compose file or by supplying the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables on compose up (see Install instructions).
 
-=======
-
-### Prometheus:
-- it has its database configured to store metrics collected from cadvisor
-- Raw metrics can be inspected by visiting ``http://localhost:9090/metrics/``
-*All data from Prometheus is persistent as docker volumes were specified in docker-compose.yml.*
-
-
-### cAdvisor:
-- cadvisor is configured to collect metrics from all containers and store them on prometheus database
-
-
-### Grafana:
-- Grafana dashboard is configured with metric graphs for monitoring.
-- Navigate to `http://<host-ip>:2020` and login with user **admin** password **admin**. You can change the credentials in the compose file or by supplying the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables on compose up (see Install instructions).
-
->>>>>>> origin/master
 -----
 Stress test:
 Em uma nova sessão do shell, vizualise o worload dos processos node
