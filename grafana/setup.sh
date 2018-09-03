@@ -2,7 +2,7 @@
 
 # Script to configure grafana datasources and dashboards.
 
-GRAFANA_URL=${GRAFANA_URL:-http://$GF_SECURITY_ADMIN_USER:$GF_SECURITY_ADMIN_PASSWORD@localhost:3000}
+GRAFANA_URL=${GRAFANA_URL:-http://$GF_SECURITY_ADMIN_USER:$GF_SECURITY_ADMIN_PASSWORD@localhost:2000}
 DATASOURCES_PATH=${DATASOURCES_PATH:-/etc/grafana/datasources}
 DASHBOARDS_PATH=${DASHBOARDS_PATH:-/etc/grafana/dashboards}
 
