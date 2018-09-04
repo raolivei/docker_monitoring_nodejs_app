@@ -1,4 +1,4 @@
-lynx_challenge_docker_app
+docker_monitoring_nodejs_app
 ====================
 
 Solution built with Docker. Services:
@@ -8,22 +8,21 @@ prometheus (metrics database);
 cadvisor (metrics collector);
 grafana (reports dashboard).
 
-Tests run on Ubuntu Server 18.04.1 LTS (https://www.ubuntu.com/download/server), but the architecture is flexible enough to work on later Ubuntu versions.
+Tests run on Ubuntu Server 18.04.1 LTS (https://www.ubuntu.com/download/server), but the architecture is flexible enough to work on later Ubuntu versions and MacOS.
+
+
+## deploy.sh
+Run `$ ./deploy.sh` in your shell and provide root password when asked. It will install the prerequisites, setup the daily job and deploy the solution. It will do all the magic for you.
+
+Alternativelly, you can deploy manually by following the lines below.
 
 ## Prerequisites:
-
-* Docker Engine version 1.13
-* Docker Compose version 1.21.2
-Make sure that your host has connection to the internet.
-
-
-***
-ssmtp.conf = This file contains the ssmtp server configuration. SSMTP is installed in the docker host by the `deploy.sh` script.
-Use this configuration file to add/change smtp server address and account credentials.
-
-*** Alternatively, you can opt to deploy it manually by executing the `deploy.sh` steps in your shell. This solution is intended to work in either Ubuntu or macOS. ***
-
-
+Make sure that your host has connection to the internet. It is necessary for receiving daily emails (website workload)
+* Ubuntu Server 18.04.1 LTS, configured with:
+** Docker Engine version 1.13 or higher
+** Docker Compose version 1.21.2 or higher
+** Git
+** ssmtp
 
 
 ## Install
@@ -31,19 +30,23 @@ Use this configuration file to add/change smtp server address and account creden
 1. Open your Terminal and leverage your access:
 `$ sudo su`
 
-2. Clone (or download from GitHub website) this repository on your Docker host and go to XXXXXX directory
-```bash
-$ git clone https://github.com/raolivei/XXXXXX
-$ cd  xxxxxxxx/
-```
-3. Run the XXXX script to start the deployment.
-```bash
-$ ./SCRIPT.sh
-```
-The script is going to install docker and docker-compose to your machine.
+2. Clone (or download from GitHub) this repository on your Docker host
+`$ git clone https://github.com/raolivei/port-listener-app`
 
-## Build the containers and start the application:
+3. Go to port-listener-app directory
+$ `cd  port-listener-app`
+
+4. Run the `deploy.sh` script to start the deployment.
+```bash
+$ ./deploy.sh
+```
+The script is going to:
+1. Install docker, docker-compose, git and SSMTP to your machine;
+
+## Build (re-build) the containers and start the application:
 `docker-compose up --build`
+
+
 =======
 
 ## List of Containers
@@ -66,10 +69,6 @@ The script is going to install docker and docker-compose to your machine.
 - for HTTPS requests: `https://localhost:443`
 You should see the "Hello World" message followed by the number of CPUs.
 
-### iperf3
-This container was written to test maximum network throughput.
-`docker run --name=XXXXXX -it -p 5201:5201/tcp -p 5201:5201/udp IMAGE/NAME`
-
 ### Prometheus:
 - it has its database configured to store metrics collected from cadvisor
 - Raw metrics can be inspected by visiting ``http://localhost:9090/metrics/``
@@ -86,26 +85,42 @@ This container was written to test maximum network throughput.
 
 -----
 Stress test:
-Em uma nova sessão do shell, vizualise o worload dos processos node
+In a new shell session, you can vizualize the node process workload distribution individually by running this command
 `$ docker exec -it app "top | grep /usr/local/bin/node`"
 
-Em uma nova sessao do shell, utilize o seguinte utilitário para gerar load nos nodes:
-`˜/wrk-master$ ./wrk -t12 -c400 -d30s https://localhost:443`
-`˜/wrk-master$ ./wrk -t12 -c400 -d30s http://localhost:80`
+In a new shell session, run the commands below to start a utility that will generate requests to nginx proxy ports 80 and 443:
+`$ docker run --rm --network=docker_monitoring_nodejs_app_container-net --anme=wrk_stress williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s http://nginx-proxy:443/ `
+
+`$ docker run --rm --network=docker_monitoring_nodejs_app_container-net --anme=wrk_stress williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s http://nginx-proxy:80/ `
+
+It is also possible to stress test the app itself on port 3000:
+`docker run --rm --network=chaordic_container-net  williamyeh/wrk -t9 -c10 -d30s -H 'Host: localhost' --timeout 5s http://app:3000/`
+
+Monitoring:
+You can monitor the workload results by accessing Grafana dashboard 'containers-monitor':
+http://localhost:2000/dashboard/db/containers-monitor
+
+The last two graphs refer to network input/output. It is also interesting to monitor memory and cpu usage.
 
 
 ### EMAIL ####
-docker exec -it nginx-proxy 
 
-access log: /etc/nginx/logs/access.log
+Make sure Docker host (where SSMTP should reside) has connection to the internet.
 
-get data: awk '{print $9}' /etc/nginx/logs/access.log | sort | uniq -c | sort -rn
+***
+ssmtp.conf = This file contains the ssmtp server configuration. SSMTP is installed in the docker host by the `deploy.sh` script.
+Use this configuration file to add/change smtp server address and account credentials.
 
-get data: docker exec -it nginx-proxy awk '{print $9}' /etc/nginx/logs/access.log | sort | uniq -c | sort -rn
+*** Alternatively, you can opt to deploy it manually by executing the `deploy.sh` steps in your shell. This solution is intended to work in either Ubuntu or macOS. ***
 
-start job: docker exec -it nginx-proxy echo "This is the body of the email" | mail -s "This is the subject line" rafa.oliveira1@gmail.com
 
-SEND EMAIL: docker exec -it nginx-proxy awk '{print $9}' /etc/nginx/logs/access.log | sort | uniq -c | sort -rn | mail rafa.oliveira1@gmail.com
+### crontab.sh
+Cron is going to send daily emails at 1 PM by default.
+To change hours/minutes of the daily job, change the variables `Min` and `Hour` inside ``crontab.sh``:
+`#Define hours and minutes for the daily job
+Min="00"
+Hour="13"
+...`
 
 
 ## Grafana metrics:
@@ -127,24 +142,3 @@ SEND EMAIL: docker exec -it nginx-proxy awk '{print $9}' /etc/nginx/logs/access.
 - Container Network Output: sum by (name) (rate(container_network_transmit_bytes_total{image!=""}[1m]))
 
 ![containers-monitor](https://github.com/raolivei/perfdata-monitor-app/blob/master/grafana-screens/containers-monitor.png)
-
-### services-monitor Dashboard
-
-
-- prometheus Uptime: (time() - process_start_time_seconds{instance="localhost:9090",job="prometheus"})
-- Memory Usage: sum(container_memory_usage_bytes)
-- In-Memory Chunks: prometheus_tsdb_head_chunks
-- In-Memory Series: prometheus_tsdb_head_series
-- Container CPU Usage: sum(rate(container_cpu_user_seconds_total[1m]) * 100  / scalar(count(machine_cpu_cores))) by (name)
-- Container Memory Usage: sum(container_memory_usage_bytes) by (name)
-- Chunks to persist: Data Source (default)
-- Persistence Urgency: Data Source (default)
-- Chunk ops: Data Source (default)
-- Checkpoint duration: Data Source (default)
-- Prometheus Engine Query Duration 5m rate: rate(prometheus_engine_query_duration_seconds[5m])
-- Target Scrapes: rate(prometheus_target_interval_length_seconds_count[5m])
-- Scrape Duration: prometheus_target_interval_length_seconds{quantile!="0.01", quantile!="0.05"}
-- HTTP Requests: sum(irate(http_request_total[1m]))
-- Alerts: Data Source (default)
-
-![services-monitor](https://github.com/raolivei/perfdata-monitor-app/blob/master/grafana-screens/services-monitor.png)
