@@ -24,9 +24,12 @@ scrape_configs:
 
   - job_name: 'nginx-proxy'
     static_configs:
-    - targets: ['localhost:80']
-    - targets: ['localhost:443']
-    
+    - targets: ['nginx-proxy:80']
+    - targets: ['nginx-proxy:443']
+#    - targets: ['localhost:80']
+#    - targets: ['localhost:443']    
+
+
   - job_name: 'app'
     static_configs:
     - targets: ['app:3000']
