@@ -1,45 +1,47 @@
 docker_monitoring_nodejs_app
 ====================
 
-Solution built with Docker. Services:
-app (node.js code to cluster (load balance) node instances per CPUl;
-nginx-proxy (reverse proxy for app);
-prometheus (metrics database);
-cadvisor (metrics collector);
-grafana (reports dashboard).
+Solution built for Docker to monitor metrics from a node.js application and send daily emails with a list requisition frequency and response code.
+Services:
+1. app (node.js code to cluster (load balance) node instances per CPU;
+2. nginx-proxy (reverse proxy for app);
+3. prometheus (metrics database);
+4. cadvisor (metrics collector);
+5. grafana (reports dashboard).
 
-Tests run on Ubuntu Server 18.04.1 LTS (https://www.ubuntu.com/download/server), but the architecture is flexible enough to work on later Ubuntu versions.
+
+*Tests run on Ubuntu Server 18.04.1 LTS (https://www.ubuntu.com/download/server), but the architecture is flexible enough to work on later Ubuntu versions.*
 
 
 
 ## Prerequisites:
 Make sure that your host has connection to the internet. It is necessary for receiving daily emails (website workload)
-* Ubuntu Server 18.04.1 LTS, configured with:
-  * Docker Engine version 1.13 or higher
-  * Docker Compose version 1.21.2 or higher
-  * Git
+**Ubuntu Server 18.04.1 LTS, configured with:**
+* Docker Engine version 1.13 or higher
+* Docker Compose version 1.21.2 or higher
+* Git
 
 
 
 ## Deploy
 1. Clone (or download from GitHub) this repository on your Docker host
-$ `git clone https://github.com/raolivei/docker_monitoring_nodejs_app.git`
+`$ git clone https://github.com/raolivei/docker_monitoring_nodejs_app.git`
 
 2. Go to docker_monitoring_nodejs_app directory
-$ `cd  docker_monitoring_nodejs_app`
+`$ cd  docker_monitoring_nodejs_app`
 
 3. Run `/deploy.sh` in your shell and provide root password when asked. It will install docker, docker-compose, setup ssmtp for the daily job (first email will be sent 30 minutes after deployment time) and deploy the solution. It will do all the magic for you  :+1:
 ```bash
 $ ./deploy.sh
 ```
 
-**If you need to rebuild the containers (e.g.: image updates, configuration changes), make the necessary changes and run the following command:**
+*If you need to rebuild the containers (e.g.: image updates, configuration changes), make the necessary changes and run the following command:*
 ```bash
 $ sudo docker-compose up --build`
 ```
 
 
-## Stress test:
+## Stress test
 In a new shell session, you can visualize the node process workload distribution individually by running this command
 ```bash
 $ sudo docker exec -it app "top | grep /usr/local/bin/node"`
@@ -58,11 +60,12 @@ It is also possible to stress test the app itself on port 3000
 sudo docker run --rm --network=dockermonitoringnodejsapp_container-net --name=wrk_stressTest williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s http://app:3000
 ```
 
-Monitoring:
+### Monitoring
 You can monitor the workload results by accessing Grafana dashboard 'containers-monitor':
 http://localhost:2000/dashboard/db/containers-monitor
 
 The last two graphs refer to network input/output. It is also interesting to monitor memory and cpu usage.
+
 
 
 ## Daily email notification
@@ -74,28 +77,31 @@ Use this configuration file to add/change smtp server address and account creden
 
 
 
-### cronJob.sh
-Cron is going to send daily emails at a pre-defined time of 30 minutes after the first deployment.
-To change hours/minutes of the daily job, change the variables `Min` and `Hour` inside ``cronJob.sh``:
-`#Define hours and minutes for the daily job
+
+#### cronJob.sh
+Cron is going to send daily emails at a pre-defined time of 30 minutes after the first deployment.<br />
+To change hours/minutes of the daily job, change the variables `Min` and `Hour` inside ``cronJob.sh``
+
+```bash
+#Define hours and minutes for the daily job
 Min=$(date --date='30 minutes' +%M)
 Hour=$(date --date='30 minutes' +%H)
-...`
+...
+```
 
 
 ## List of Containers
 * app ``http://localhost:3000``
 * nginx-proxy ``http://localhost:80`` ; ``https://localhost:443``
-* iperf3 XXXX
 * Prometheus (metrics database) ``http://localhost:9090``
 * cAdvisor (containers metrics collector) ``http://localhost:7070``
-* Grafana (visualize metrics) ``http://localhost:2020``
+* Grafana (visualize metrics) ``http://localhost:2000``
 
 *The list of running containers can be seen by running* `$ sudo docker ps`
 
 ### app:
 - listens for port 3000, this port is mirrored to your docker host;
-- prints "Hello world!" and the number of CPUS in the docker host (CPU number might be limited in Docker preferences->Advanced menu);
+- prints "Hello world!" and the number of CPUS in the docker host (Obs.: Number of CPUs  might be limited in *Docker preferences->Advanced menu*);
 - it has a cluster configured that is going to create one node instance per CPU;
 
 ### nginx-proxy:
@@ -106,7 +112,7 @@ You should see the "Hello World" message followed by the number of CPUs.
 
 ### Prometheus:
 - it has its database configured to store metrics collected from cadvisor
-- Raw metrics can be inspected by visiting ``http://localhost:9090/metrics/``
+- Raw metrics can be inspected by visiting ``http://localhost:9090/metrics/``<br />
 *All data from Prometheus is persistent as docker volumes were specified in docker-compose.yml.*
 
 
@@ -119,11 +125,26 @@ You should see the "Hello World" message followed by the number of CPUs.
 
 ### Grafana:
 - Grafana dashboard is configured with metric graphs for monitoring.
-- Navigate to `http://<host-ip>:2020` and login with user **admin** password **admin**. You can change the credentials in the compose file or by supplying the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables on compose up (see Install instructions).
+- Navigate to `http://<host-ip>:2000` and login with user **admin** password **admin**. You can change the credentials in either the compose file or by supplying the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables on compose up.
+```bash
+$ ADMIN_USER=admin ADMIN_PASSWORD=admin docker-compose up`
+```
+
+Grafana is preconfigured with dashboards and **'prometheus'** as the default data source:
+```bashName: prometheus
+Type: Prometheus
+Url: http://prometheus:9090
+Access: proxy
+basicAuth: false
+```
+
+*All data from Grafana is persistent as docker volumes were specified in docker-compose.yml.*
+
 
 
 ## Grafana metrics:
 ### container-monitor Dashboard
+> URL: http://localhost:2000/dashboard/db/containers-monitor
 
 - CPU Load: sum(rate(container_cpu_user_seconds_total{image!=""}[1m])) / count(machine_cpu_cores) * 100
 - CPU Cores: machine_cpu_cores

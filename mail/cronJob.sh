@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #Define hours and minutes for the daily job
-Min=$(date --date='10 minutes' +%M)
-Hour=$(date --date='10 minutes' +%H)
+Min=$(date --date='30 minutes' +%M)
+Hour=$(date --date='30 minutes' +%H)
 
 # crontab job to schedule daily emails
 MAILDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
