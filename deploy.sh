@@ -23,4 +23,4 @@ sudo cp mail/ssmtp.conf /etc/ssmtp/ssmtp.conf
 ./mail/cronJob.sh
 
 # Deploy docker_monitoring_nodejs_app
-# sudo docker-compose up --build
+sudo docker-compose up --build

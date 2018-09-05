@@ -32,10 +32,10 @@ Make sure that your host has connection to the internet. It is necessary for rec
 `$ sudo su`
 
 2. Clone (or download from GitHub) this repository on your Docker host
-`$ git clone https://github.com/raolivei/docker_monitoring_nodejs_app.git`
+$ `git clone https://github.com/raolivei/docker_monitoring_nodejs_app.git`
 
 3. Go to port-listener-app directory
-$ `cd  port-listener-app`
+$ `cd  docker_monitoring_nodejs_app`
 
 4. Run the `deploy.sh` script to start the deployment.
 ```bash
@@ -44,8 +44,8 @@ $ ./deploy.sh
 The script is going to:
 1. Install docker, docker-compose, git and SSMTP to your machine;
 
-## Build (re-build) the containers and start the application:
-`docker-compose up --build`
+## Build (and re-build) the containers and start the application:
+`sudo docker-compose up -d --build`
 
 
 =======
@@ -58,6 +58,7 @@ The script is going to:
 * cAdvisor (containers metrics collector) ``http://localhost:7070``
 * Grafana (visualize metrics) ``http://localhost:2020``
 
+> The list of running containers can be seen by running `sudo docker ps`
 
 ### app:
 - listens for port 3000, this port is mirrored to your docker host;
@@ -87,18 +88,20 @@ You should see the "Hello World" message followed by the number of CPUs.
 - Grafana dashboard is configured with metric graphs for monitoring.
 - Navigate to `http://<host-ip>:2020` and login with user **admin** password **admin**. You can change the credentials in the compose file or by supplying the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables on compose up (see Install instructions).
 
------
+
 
 # Stress test:
 In a new shell session, you can visualize the node process workload distribution individually by running this command
 `$ sudo docker exec -it app "top | grep /usr/local/bin/node"`
 
 In a new shell session, run the commands below to start a utility that will generate requests to nginx proxy ports 80 and 443:
+
 `$ sudo docker run --rm --network=dockermonitoringnodejsapp_container-net --name=wrk_stressTest williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s https://nginx-proxy:443/ `
 
 `$ sudo docker run --rm --network=dockermonitoringnodejsapp_container-net --name=wrk_stressTest williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s http://nginx-proxy:80/ `
 
 It is also possible to stress test the app itself on port 3000:
+
 `sudo docker run --rm --network=dockermonitoringnodejsapp_container-net --name=wrk_stressTest williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s http://app:3000/`
 
 Monitoring:
@@ -112,8 +115,7 @@ The last two graphs refer to network input/output. It is also interesting to mon
 
 Make sure Docker host (where ssmtp package resides) has connection to the internet.
 
-***
-ssmtp.conf = This file contains the ssmtp server configuration. SSMTP is installed in the docker host by the `deploy.sh` script.
+`ssmtp.conf` = This file contains the ssmtp server configuration. SSMTP is installed in the docker host by the `deploy.sh` script.
 Use this configuration file to add/change smtp server address and account credentials.
 
 *** Alternatively, you can opt to deploy it manually by executing the `deploy.sh` steps in your shell. This solution is intended to work in either Ubuntu or macOS. ***
