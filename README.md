@@ -72,15 +72,13 @@ The last two graphs refer to network input/output. It is also interesting to mon
 
 Make sure Docker host (where ssmtp package resides) has connection to the internet.
 
-`ssmtp.conf` = This file contains the ssmtp server configuration. SSMTP is installed in the docker host by the `deploy.sh` script.
+**ssmtp.conf**<br />
+This file contains the ssmtp server configuration. SSMTP is installed in the docker host by the `deploy.sh` script.
 Use this configuration file to add/change smtp server address and account credentials.
 
-
-
-
-#### cronJob.sh
+**cronJob.sh**<br />
 Cron is going to send daily emails at a pre-defined time of 30 minutes after the first deployment.<br />
-To change hours/minutes of the daily job, change the variables `Min` and `Hour` inside ``cronJob.sh``
+To change hours/minutes of the daily job, change the variables `Min` and `Hour` inside ``cronJob.sh``:
 
 ```bash
 #Define hours and minutes for the daily job
@@ -144,7 +142,7 @@ basicAuth: false
 
 ## Grafana metrics:
 ### container-monitor Dashboard
-> URL: http://localhost:2000/dashboard/db/containers-monitor
+URL: http://localhost:2000/dashboard/db/containers-monitor
 
 - CPU Load: sum(rate(container_cpu_user_seconds_total{image!=""}[1m])) / count(machine_cpu_cores) * 100
 - CPU Cores: machine_cpu_cores
@@ -161,6 +159,4 @@ basicAuth: false
 - Container Network Input: sum by (name) (rate(container_network_receive_bytes_total{image!=""}[1m]))
 - Container Network Output: sum by (name) (rate(container_network_transmit_bytes_total{image!=""}[1m]))
 
---------
-
-![containers-monitor](https://github.com/raolivei/perfdata-monitor-app/blob/master/grafana-screens/containers-monitor.png)
+![containers-monitor](https://github.com/raolivei/docker_monitoring_nodejs_app/blob/master/grafana/dashboard-printscreen.png)
