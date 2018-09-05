@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DESTINATION_PATH=/home/user/Desktop/docker_monitoring_nodejs_app/mail
+DESTINATION_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 echo "Subject: CARAAAAI" > $DESTINATION_PATH/mail.txt
 echo "" >> $DESTINATION_PATH/mail.txt
 echo "Este é um relatório simples que mostra a frequência das requisições no website e o respectivo código de resposta  :" >> $DESTINATION_PATH/mail.txt

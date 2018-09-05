@@ -32,7 +32,7 @@ Make sure that your host has connection to the internet. It is necessary for rec
 `$ sudo su`
 
 2. Clone (or download from GitHub) this repository on your Docker host
-`$ git clone https://github.com/raolivei/port-listener-app`
+`$ git clone https://github.com/raolivei/docker_monitoring_nodejs_app.git`
 
 3. Go to port-listener-app directory
 $ `cd  port-listener-app`
