@@ -12,7 +12,8 @@ Tests run on Ubuntu Server 18.04.1 LTS (https://www.ubuntu.com/download/server),
 
 
 ## deploy.sh
-Run `$ ./deploy.sh` in your shell and provide root password when asked. It will install the prerequisites, setup the daily job and deploy the solution. It will do all the magic for you.
+Run `/deploy.sh` in your shell and provide root password when asked. It will install the prerequisites, setup the daily job and deploy the solution. It will do all the magic for you :+1:
+
 
 Alternativelly, you can deploy manually by following the lines below.
 
@@ -76,7 +77,10 @@ You should see the "Hello World" message followed by the number of CPUs.
 
 
 ### cAdvisor:
-- cadvisor is configured to collect metrics from all containers and store them on prometheus database
+- cadvisor is configured to collect metrics from all containers and store them on prometheus database.
+- cadvisor metrics can be seen in Grafana dashboard.
+- cadvisor service uses port 8080 but it is mapped to port 7070 on the docker Host.
+- To access cadvisor, simply go to `localhost:7070`
 
 
 ### Grafana:
@@ -84,17 +88,18 @@ You should see the "Hello World" message followed by the number of CPUs.
 - Navigate to `http://<host-ip>:2020` and login with user **admin** password **admin**. You can change the credentials in the compose file or by supplying the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables on compose up (see Install instructions).
 
 -----
-Stress test:
-In a new shell session, you can vizualize the node process workload distribution individually by running this command
-`$ docker exec -it app "top | grep /usr/local/bin/node`"
+
+# Stress test:
+In a new shell session, you can visualize the node process workload distribution individually by running this command
+`$ sudo docker exec -it app "top | grep /usr/local/bin/node"`
 
 In a new shell session, run the commands below to start a utility that will generate requests to nginx proxy ports 80 and 443:
-`$ docker run --rm --network=docker_monitoring_nodejs_app_container-net --anme=wrk_stress williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s http://nginx-proxy:443/ `
+`$ sudo docker run --rm --network=dockermonitoringnodejsapp_container-net --name=wrk_stressTest williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s https://nginx-proxy:443/ `
 
-`$ docker run --rm --network=docker_monitoring_nodejs_app_container-net --anme=wrk_stress williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s http://nginx-proxy:80/ `
+`$ sudo docker run --rm --network=dockermonitoringnodejsapp_container-net --name=wrk_stressTest williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s http://nginx-proxy:80/ `
 
 It is also possible to stress test the app itself on port 3000:
-`docker run --rm --network=chaordic_container-net  williamyeh/wrk -t9 -c10 -d30s -H 'Host: localhost' --timeout 5s http://app:3000/`
+`sudo docker run --rm --network=dockermonitoringnodejsapp_container-net --name=wrk_stressTest williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s http://app:3000/`
 
 Monitoring:
 You can monitor the workload results by accessing Grafana dashboard 'containers-monitor':
@@ -103,9 +108,9 @@ http://localhost:2000/dashboard/db/containers-monitor
 The last two graphs refer to network input/output. It is also interesting to monitor memory and cpu usage.
 
 
-### EMAIL ####
+# Daily email notification
 
-Make sure Docker host (where SSMTP should reside) has connection to the internet.
+Make sure Docker host (where ssmtp package resides) has connection to the internet.
 
 ***
 ssmtp.conf = This file contains the ssmtp server configuration. SSMTP is installed in the docker host by the `deploy.sh` script.
@@ -114,9 +119,9 @@ Use this configuration file to add/change smtp server address and account creden
 *** Alternatively, you can opt to deploy it manually by executing the `deploy.sh` steps in your shell. This solution is intended to work in either Ubuntu or macOS. ***
 
 
-### crontab.sh
+### cronJob.sh
 Cron is going to send daily emails at 1 PM by default.
-To change hours/minutes of the daily job, change the variables `Min` and `Hour` inside ``crontab.sh``:
+To change hours/minutes of the daily job, change the variables `Min` and `Hour` inside ``cronJob.sh``:
 `#Define hours and minutes for the daily job
 Min="00"
 Hour="13"
