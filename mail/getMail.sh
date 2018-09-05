@@ -7,4 +7,4 @@ echo "Este é um relatório simples que mostra a frequência das requisições n
 echo "" >> $DESTINATION_PATH/mail.txt
 echo "   Freq | Response code" >> $DESTINATION_PATH/mail.txt
 docker exec -t nginx-proxy  awk '{print $9}' /etc/nginx/logs/access.log | sort | uniq -c | sort -rn >> $DESTINATION_PATH/mail.txt
-cat $DESTINATION_PATH/mail.txt | /usr/sbin/sendmail rafa.oliveira1@gmail.com
+cat $DESTINATION_PATH/mail.txt | /usr/sbin/sendmail $(cat $DESTINATION_PATH/EmailAddress.txt)

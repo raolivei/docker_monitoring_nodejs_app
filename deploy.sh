@@ -1,6 +1,10 @@
 # script for the docker host Ubuntu Server 18.04.1 LTS (https://www.ubuntu.com/download/server)
 #!/bin/bash
 
+echo "Enter the email address to receive daily emails:"
+read EmailAddress
+echo $EmailAddress > mail/EmailAddress.txt
+
 sudo apt-get update
 
 # sudo apt-get -y remove docker docker-engine docker.io

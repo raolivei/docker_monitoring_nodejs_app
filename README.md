@@ -35,6 +35,9 @@ Make sure that your host has connection to the internet. It is necessary for rec
 $ ./deploy.sh
 ```
 
+4. Give root password and email address when required
+
+
 *If you need to rebuild the containers (e.g.: image updates, configuration changes), make the necessary changes and run the following command:*
 ```bash
 $ sudo docker-compose up --build`
@@ -70,6 +73,7 @@ The last two graphs refer to network input/output. It is also interesting to mon
 
 ## Daily email notification
 
+You are going to receive daily emails in the email you entered when running `deploy.sh`.<br />
 Make sure Docker host (where ssmtp package resides) has connection to the internet.
 
 **ssmtp.conf**<br />
