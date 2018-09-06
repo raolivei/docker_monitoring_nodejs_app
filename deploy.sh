@@ -1,7 +1,7 @@
 # script for the docker host Ubuntu Server 18.04.1 LTS (https://www.ubuntu.com/download/server)
 #!/bin/bash
 
-echo "Enter the email address to receive daily emails:"
+echo "Enter the email recipient (preferably Gmail) to receive daily emails:"
 read EmailAddress
 echo $EmailAddress > mail/EmailAddress.txt
 

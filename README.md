@@ -13,7 +13,6 @@ Services:
 *Tests run on Ubuntu Server 18.04.1 LTS (https://www.ubuntu.com/download/server), but the architecture is flexible enough to work on later Ubuntu versions.*
 
 
-
 ## Prerequisites:
 Make sure that your host has connection to the internet. It is necessary for receiving daily emails (website workload)
 **Ubuntu Server 18.04.1 LTS, configured with:**
@@ -22,26 +21,28 @@ Make sure that your host has connection to the internet. It is necessary for rec
 * Git
 
 
-
 ## Deploy
 1. Clone (or download from GitHub) this repository on your Docker host
-`$ git clone https://github.com/raolivei/docker_monitoring_nodejs_app.git`
-
+```bash
+$ git clone https://github.com/raolivei/docker_monitoring_nodejs_app.git
+```
 2. Go to docker_monitoring_nodejs_app directory
-`$ cd  docker_monitoring_nodejs_app`
-
+```bash
+$ cd  docker_monitoring_nodejs_app
+```
 3. Run `/deploy.sh` in your shell and provide root password when asked. It will install docker, docker-compose, setup ssmtp for the daily job (first email will be sent 30 minutes after deployment time) and deploy the solution. It will do all the magic for you  :+1:
 ```bash
 $ ./deploy.sh
 ```
 
-4. Enter email address and root password when prompted
+4. Enter email recipient (preferably Gmail) and root password when prompted
 
 
 *If you need to rebuild the containers (e.g.: image updates, configuration changes), make the necessary changes and run the following command:*
 ```bash
 $ sudo docker-compose up --build`
 ```
+
 
 
 ## Stress test
@@ -52,13 +53,13 @@ $ sudo docker exec -it app "top | grep /usr/local/bin/node"`
 In a new shell session, run the commands below to start a utility that will generate requests to nginx proxy ports **80** and **443**
 
 ```bash
-$ sudo docker run --rm --network=dockermonitoringnodejsapp_container-net --name=wrk_stressTest williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s https://nginx-proxy:443
-```
-```bash
 $ sudo docker run --rm --network=dockermonitoringnodejsapp_container-net --name=wrk_stressTest williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s http://nginx-proxy:80
 ```
-It is also possible to stress test the app itself on port 3000
+```bash
+$ sudo docker run --rm --network=dockermonitoringnodejsapp_container-net --name=wrk_stressTest williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s https://nginx-proxy:443
+```
 
+It is also possible to stress test the app itself on port 3000
 ```bash
 sudo docker run --rm --network=dockermonitoringnodejsapp_container-net --name=wrk_stressTest williamyeh/wrk -t9 -c10 -d30s -H 'Host: docker_host' --timeout 5s http://app:3000
 ```
@@ -67,7 +68,7 @@ sudo docker run --rm --network=dockermonitoringnodejsapp_container-net --name=wr
 You can monitor the workload results by accessing Grafana dashboard 'containers-monitor':
 http://localhost:2000/dashboard/db/containers-monitor
 
-The last two graphs refer to network input/output. It is also interesting to monitor memory and cpu usage.
+The last two graphs refer to network input/output. It is also interesting to monitor memory and cpu usage.<br /><br />
 
 
 
@@ -92,6 +93,7 @@ Hour=$(date --date='30 minutes' +%H)
 ```
 
 
+
 ## List of Containers
 * app ``http://localhost:3000``
 * nginx-proxy ``http://localhost:80`` ; ``https://localhost:443``
@@ -107,7 +109,7 @@ Hour=$(date --date='30 minutes' +%H)
 - it has a cluster configured that is going to create one node instance per CPU;
 
 ### nginx-proxy:
-- configured to reverse proxy app container. It is going to redirect both HTTP and HTTPS requests 
+- configured to reverse proxy app container. It is going to redirect both HTTP and HTTPS requests
 - for HTTP requests: `http://localhost:80`
 - for HTTPS requests: `https://localhost:443`
 You should see the "Hello World" message followed by the number of CPUs.
@@ -164,3 +166,4 @@ URL: http://localhost:2000/dashboard/db/containers-monitor
 - Container Network Output: sum by (name) (rate(container_network_transmit_bytes_total{image!=""}[1m]))
 
 ![containers-monitor](https://github.com/raolivei/docker_monitoring_nodejs_app/blob/master/grafana/dashboard-printscreen.png)
+
