@@ -1,5 +1,5 @@
 docker_monitoring_nodejs_app
-====================
+============================
 
 Solution built for Docker to monitor metrics from a node.js application and send daily emails with a list requisition frequency and response code.
 Services:
@@ -35,7 +35,7 @@ Make sure that your host has connection to the internet. It is necessary for rec
 $ ./deploy.sh
 ```
 
-4. Give root password and email address when required
+4. Enter email address and root password when prompted
 
 
 *If you need to rebuild the containers (e.g.: image updates, configuration changes), make the necessary changes and run the following command:*
