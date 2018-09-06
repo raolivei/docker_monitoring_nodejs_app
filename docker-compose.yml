@@ -27,7 +27,7 @@ services:
     build:
       context: ./nginx-proxy/
       dockerfile: Dockerfile-nginx
-    image: nginx-proxy:2
+    image: nginx-proxy:latest
     container_name: nginx-proxy
     hostname: nginx-proxy
     restart: always

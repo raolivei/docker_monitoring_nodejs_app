@@ -146,6 +146,20 @@ basicAuth: false
 
 
 
+## List of Docker images
+```bash
+$ docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+nginx-proxy         2                   083b8ee92295        3 minutes ago       19.2MB
+app                 latest              45a1f72491e4        5 minutes ago       71.9MB
+node                8.11.4-alpine       8adf3c3eb26c        30 hours ago        68.1MB
+prom/prometheus     latest              0915a968017e        7 weeks ago         119MB
+alpine              edge                9d1f27787d39        2 months ago        4.41MB
+grafana/grafana     4.6.3               5d1d85717268        8 months ago        284MB
+google/cadvisor     latest              75f88e3ec333        9 months ago        62.2MB
+````
+
+
 ## Grafana metrics:
 ### container-monitor Dashboard
 URL: http://localhost:2000/dashboard/db/containers-monitor
